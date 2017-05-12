@@ -27,6 +27,9 @@ const char *register_str[] = {	"$zero",
 				"$fp",
 				"$ra"
 				};
+				
+//Functions for assembler operations
+//float add(float a, float b){}
 
 typedef int (*opcode_function)(unsigned int, unsigned int*, char*, char*, char*, char*);
 
@@ -41,6 +44,11 @@ int opcode_nop(unsigned int offset, unsigned int *bytecode, char *opcode, char *
 	*bytecode=0;
 	return (0);
 }
+
+int opcode_add(unsigned int offset, unsigned int *bytecode, char *opcode, char *arg1, char *arg2, char *arg3){
+	
+	return (0);
+	}
 
 const char *opcode_str[] = {"nop", "add", "addi", "andi", "beq", "bne", "srl", "sll"};
 opcode_function opcode_func[] = {&opcode_nop, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
@@ -83,9 +91,9 @@ int make_bytecode(){
 
 	char label[MAX_ARG_LEN+1];
 	char opcode[MAX_ARG_LEN+1];
-        char arg1[MAX_ARG_LEN+1];
-        char arg2[MAX_ARG_LEN+1];
-        char arg3[MAX_ARG_LEN+1];
+    char arg1[MAX_ARG_LEN+1];
+    char arg2[MAX_ARG_LEN+1];
+    char arg3[MAX_ARG_LEN+1];
 
        	printf("ASSEMBLING PROGRAM ...\n");
 	while(j<prog_len){
@@ -153,7 +161,7 @@ int load_program(){
 int main(){
 	if (load_program()<0) 	return(-1);        
 	if (make_bytecode()<0) 	return(-1); 
-        if (exec_bytecode()<0) 	return(-1);
+    if (exec_bytecode()<0) 	return(-1);
    	return(0);
 }
 
