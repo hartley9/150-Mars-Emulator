@@ -76,6 +76,11 @@ int exec_bytecode(){
 
 
 	//here goes the code to run the byte code
+	printf("This is the contents of text[]");
+	for (int i=0;i<sizeof(text);i++){
+		printf("%u", text[i]);
+		}
+	
 
 	print_registers(); // print out the state of registers at the end of execution
 
@@ -87,7 +92,7 @@ int exec_bytecode(){
 /* function to create bytecode */ 
 int make_bytecode(){
 	unsigned int bytecode; // holds the bytecode for each converted program instruction 
-       	int j=0; //instruction counter (equivalent to program line)
+    int j=0; //instruction counter (equivalent to program line)
 
 	char label[MAX_ARG_LEN+1];
 	char opcode[MAX_ARG_LEN+1];
@@ -106,7 +111,7 @@ int make_bytecode(){
 		bytecode=0;
 
 		if (strchr(&prog[j][0], ':')){ //check if the line contains a label
-			if (sscanf(&prog[j][0],"%" XSTR(MAX_ARG_LEN) "[^:]: %" XSTR(MAX_ARG_LEN) "s %" XSTR(MAX_ARG_LEN) "s %" XSTR(MAX_ARG_LEN) 
+			if (scanf(&prog[j][0],"%" XSTR(MAX_ARG_LEN) "[^:]: %" XSTR(MAX_ARG_LEN) "s %" XSTR(MAX_ARG_LEN) "s %" XSTR(MAX_ARG_LEN) 
 				"s %" XSTR(MAX_ARG_LEN) "s", label, opcode, arg1, arg2, arg3) != 5){ //parse the line with label
 					printf("parse error line %d\n", j);
 					return(-1);
