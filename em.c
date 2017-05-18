@@ -43,7 +43,7 @@ int print_registers(){
 	int i;
 	printf("registers:\n"); 
 	for(i=0;i<MAX_REGISTER;i++){
-		printf(" %d: %d\n", i, registers[i]); 
+		printf(" %s: %d\n", register_str[i], registers[i]); 
 	}
 	printf(" Program Counter: 0x%08x\n", pc);
 	return(0);
@@ -69,6 +69,8 @@ int add_reg(unsigned int *bytecode, char *reg, int pos){
 			//printf("add_reg used here \n");
 			return(0);
 		}
+		
+
 	}
 	return(-1);
 } 
@@ -194,7 +196,7 @@ int make_bytecode(){
 				else {
 					printf("0x%08x 0x%08x\n",ADDR_TEXT + 4*j, bytecode);
 					text[j] = bytecode; //Bytecode stored in text
-                    break;
+					break;
 				}
                 	}
 			if(i==(MAX_OPCODE-1)) {
@@ -210,9 +212,111 @@ int make_bytecode(){
 }
 
 int exec_bytecode(){
-        printf("EXECUTING PROGRAM ...\n");
-        pc = ADDR_TEXT; //set program counter to the start of our program
+		
+		
+		
+        printf("EXECUTING PROGRAM s  ...\n");
 
+        pc = ADDR_TEXT; //set program counter to the start of our program
+        
+        int k = 1;
+        int mask = 0x00;
+        
+        int test = 0x0000000d;
+        printf("This is the TESTTTLLL;;;;:: %d\n", test);
+        
+        
+		for (int i=0; i<=prog_len;i++){
+			//ADDI
+			if ((text[i] >> 26) == 8 ){
+				printf("ADDI\n");
+				//source s
+				mask = 0x03e000000;
+				int source_s = text[i] & mask;
+				source_s = source_s >> 21;
+				printf("ADDI Source c = %d\n", source_s);
+				
+				//Immediate 
+				mask = 0x0000ffff;
+				int imm = text[i] & mask;
+				printf("ADDI immediate = %d\n", imm);
+				
+				//ADDI destination
+				mask = 0x001f0000;
+				int addi_dest = text[i] & mask;
+				addi_dest = addi_dest >> 16;
+				printf("ADDI destination = %d\n", addi_dest);
+				
+				//ADDI to registers
+				registers[addi_dest] = registers[source_s] + registers[imm];
+				
+			}
+			//Add instruction
+			else if ((text[i] >> 26 ==0) && (text[i] << 21 == 67108864)){
+				printf("ADD\n");
+				//Source s
+				mask = 0x03e000000;
+				int source_s = text[i] & mask;
+				source_s = source_s >> 21;
+				printf("Add Source s = %d\n", source_s);
+				
+				//Source t
+				mask = 0x000d0000;
+				int source_t = text[i] & mask;
+				source_t = source_t >> 16;
+				printf("Add Source t = %d\n", source_t);
+				
+				//Destination
+				mask = 0x0000d800;
+				int add_dest = text[i] & mask;
+				add_dest = add_dest >> 11;
+				printf("Add destination = %d\n", add_dest);
+				
+				//Add to registers
+				registers[add_dest] = registers[source_s]+registers[source_t];
+				
+				}
+			else if	(text[i] >> 26 == 12){
+				printf("ANDI\n");
+				//Source s
+				mask = 0x03e000000;
+				int source_s = text[i] & mask;
+				source_s = source_s >> 21;
+				printf("ANDI source s = %d\n", source_s);
+				
+				//ANDI immediate
+				mask = 0x0000ffff;
+				int imm = text[i] & mask;
+				printf("ANDI immediate = %d\n", imm);
+				
+				//ANDI destination
+				mask = 0x001f0000;
+				int andi_dest = text[i] & mask;
+				andi_dest = andi_dest >> 16;
+				printf("ANDI destination = %d\n", andi_dest);
+				
+				//ANDI to registers
+				registers[andi_dest] = registers[source_s] + registers[imm];
+				
+				}
+			else if ((text[i] >> 26 == 0) && (text[i] << 30) == k << 31){
+				printf("SRL\n");
+				
+				
+				}
+			else if ((text[i] >> 26 == 0) && (text[i] << 26 == 0)){
+				printf("SLL\n");
+				}
+			else if ((text[i] >> 26 == 4)){
+				printf("BEQ\n");
+				}
+			else if (text[i] >> 26 == 5){
+				printf("BNE\n");
+				}	
+			
+		}	
+		printf("Bytecode read from file\n");
+		
         printf("... needs implementing!\n");
         //printf("0x%08x\n", *bytecode);
         
@@ -237,11 +341,23 @@ int exec_bytecode(){
 				}
 			}
 			
-			
-
+		printf("----------------------");
+		printf("\n");
+		printf("----------------------");
+		printf("\n");
+		printf("----------------------");
+		printf("\n");
+				
+		
 
         //print_registers(); // print out the state of registers at the end of execution
 		print_registers();
+		
+		 printf("This is text[1] %d\n", text[1]);
+		 int new = text[1] >> 1;
+		 printf("Shifted right: %d\n", new);
+		 int change = text[1] - new;
+		 printf("Difference: %d\n", change);
 
         printf("... DONE!\n");
         return(0);
@@ -252,6 +368,7 @@ int exec_bytecode(){
 int load_program(){
        int j=0;
        FILE *f;
+       
 
        printf("LOADING PROGRAM ...\n");
 
@@ -269,6 +386,8 @@ int load_program(){
        for (j=0;j<prog_len;j++){
                	printf("%d: %s",j, &prog[j][0]);
        }
+       
+      
 
        printf("... DONE!\n");
 
