@@ -222,12 +222,8 @@ int exec_bytecode(){
         int k = 1;
         int mask = 0x00;
         
-        int test = 0x0000000d;
-        //printf("This is the TESTTTLLL;;;;:: %d\n", test);
-        
         
 		for (int i=0; i<=prog_len;i++){
-			registers[0] = 0; 
 			//ADDI
 			if ((text[i] >> 26) == 8 ){
 				printf("ADDI\n");
@@ -235,7 +231,7 @@ int exec_bytecode(){
 				mask = 0x03e00000;
 				int source_s = text[i] & mask;
 				source_s = source_s >> 21;
-				printf("ADDI Source s = %d\n", source_s);
+				printf("ADDI Source c = %s\n", register_str[source_s]);
 				
 				//Immediate 
 				mask = 0x0000ffff;
@@ -262,7 +258,7 @@ int exec_bytecode(){
 				printf("Add Source s = %d\n", source_s);
 				
 				//Source t
-				mask = 0x000d0000;
+				mask = 0x001f0000;
 				int source_t = text[i] & mask;
 				source_t = source_t >> 16;
 				printf("Add Source t = %d\n", source_t);
@@ -271,12 +267,10 @@ int exec_bytecode(){
 				mask = 0x0000d800;
 				int add_dest = text[i] & mask;
 				add_dest = add_dest >> 11;
-				printf("Add destination = %d\n", add_dest);
+				printf("Add destination = %s\n", register_str[add_dest]);
 				
 				//Add to registers
 				registers[add_dest] = registers[source_s]+registers[source_t];
-				
-				printf("Destination: %s = source_s %d: + source_t %d: ", register_str[add_dest], registers[source_s], registers[source_t]);
 				
 				}
 			else if	(text[i] >> 26 == 12){
@@ -304,50 +298,11 @@ int exec_bytecode(){
 				}
 			else if ((text[i] >> 26 == 0) && (text[i] << 30) == k << 31){
 				printf("SRL\n");
-				//Source s
-				mask = 0x001f0000;
-				int source_s = text[i] & mask;
-				source_s = source_s >> 16;
-				printf("SRL source s = %d\n", source_s);
 				
-				//Shift amount (shamt)
-				mask = 0x000007c0;
-				int shamt = text[i] & mask;
-				shamt = shamt >> 6;
-				printf("The srl shift amount = %d\n", shamt);
-				
-				//SRL destination
-				mask = 0x0000f800;
-				int srl_dest = text[i] & mask;
-				srl_dest = srl_dest >> 11;
-				printf("SRL destination = %s\n",register_str[srl_dest]);
-				
-				//SRL registers
-				registers[srl_dest] = registers[source_s] >> shamt;
 				
 				}
 			else if ((text[i] >> 26 == 0) && (text[i] << 26 == 0)){
 				printf("SLL\n");
-				//Source s
-				mask = 0x001f0000;
-				int source_s = text[i] & mask;
-				source_s = source_s >> 16;
-				printf("SLL source s = %d\n", source_s);
-				
-				//Shift amount (shamt)
-				mask = 0x000007c0;
-				int shamt = text[i] & mask;
-				shamt = shamt >> 6;
-				printf("SLL shamt = %d\n", shamt);
-				
-				//SLL destination
-				mask = 0x0000f800;
-				int sll_dest = sll_dest & mask;
-				sll_dest = sll_dest >> 11;
-				printf("SLL destination = %s\n", register_str[sll_dest]);
-				
-				//SLL registers
-				registers[sll_dest] = registers[source_s] << shamt;
 				}
 			else if ((text[i] >> 26 == 4)){
 				printf("BEQ\n");
@@ -359,14 +314,10 @@ int exec_bytecode(){
 		}	
 		printf("Bytecode read from file\n");
 		
-        printf("... needs implementing!\n");
+        //printf("... needs implementing!\n");
         //printf("0x%08x\n", *bytecode);
         
-        printf("This is the contents of text[] in denary \n");
-		for (int i=0;i<sizeof(text);i++){
-			if (text[i] != 0){
-			printf("%u \n", text[i]);}
-		}
+        
 		
 		printf("----------------------");
 		printf("\n");
@@ -376,13 +327,25 @@ int exec_bytecode(){
 		printf("\n");
 				
 		
-	
+		
+			
+		printf("----------------------");
+		printf("\n");
+		printf("----------------------");
+		printf("\n");
+		printf("----------------------");
+		printf("\n");
+				
 		
 
         //print_registers(); // print out the state of registers at the end of execution
 		print_registers();
 		
-
+		 printf("This is text[1] %d\n", text[1]);
+		 int new = text[1] >> 1;
+		 printf("Shifted right: %d\n", new);
+		 int change = text[1] - new;
+		 printf("Difference: %d\n", change);
 
         printf("... DONE!\n");
         return(0);
@@ -397,7 +360,7 @@ int load_program(){
 
        printf("LOADING PROGRAM ...\n");
 
-       f = fopen ("prog.txt", "r");
+       f = fopen ("prog1.txt", "r");
 
        if (f==NULL) {
        		printf("ERROR: program not found\n");
