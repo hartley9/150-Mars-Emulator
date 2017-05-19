@@ -225,6 +225,7 @@ int exec_bytecode(){
         
 		for (int i=0; i<=prog_len;i++){
 			//ADDI
+			registers[0] = 0;
 			if ((text[i] >> 26) == 8 ){
 				printf("ADDI\n");
 				//source s
