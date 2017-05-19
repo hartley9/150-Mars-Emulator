@@ -384,11 +384,7 @@ int exec_bytecode(){
         //print_registers(); // print out the state of registers at the end of execution
 		print_registers();
 		
-		 printf("This is text[1] %d\n", text[1]);
-		 int new = text[1] >> 1;
-		 printf("Shifted right: %d\n", new);
-		 int change = text[1] - new;
-		 printf("Difference: %d\n", change);
+		 
 
         printf("... DONE!\n");
         return(0);
