@@ -1,0 +1,3 @@
+	addi $s1 $s2 45
+	addi $t1 $t2 30
+	add $s2 $s1 $t1

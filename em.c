@@ -223,18 +223,19 @@ int exec_bytecode(){
         int mask = 0x00;
         
         int test = 0x0000000d;
-        printf("This is the TESTTTLLL;;;;:: %d\n", test);
+        //printf("This is the TESTTTLLL;;;;:: %d\n", test);
         
         
 		for (int i=0; i<=prog_len;i++){
+			registers[0] = 0; 
 			//ADDI
 			if ((text[i] >> 26) == 8 ){
 				printf("ADDI\n");
 				//source s
-				mask = 0x03e000000;
+				mask = 0x03e00000;
 				int source_s = text[i] & mask;
 				source_s = source_s >> 21;
-				printf("ADDI Source c = %d\n", source_s);
+				printf("ADDI Source s = %d\n", source_s);
 				
 				//Immediate 
 				mask = 0x0000ffff;
@@ -245,17 +246,17 @@ int exec_bytecode(){
 				mask = 0x001f0000;
 				int addi_dest = text[i] & mask;
 				addi_dest = addi_dest >> 16;
-				printf("ADDI destination = %d\n", addi_dest);
+				printf("ADDI destination = %s\n", register_str[addi_dest]);
 				
 				//ADDI to registers
-				registers[addi_dest] = registers[source_s] + registers[imm];
+				registers[addi_dest] = registers[source_s] + imm;
 				
 			}
 			//Add instruction
 			else if ((text[i] >> 26 ==0) && (text[i] << 21 == 67108864)){
 				printf("ADD\n");
 				//Source s
-				mask = 0x03e000000;
+				mask = 0x03e00000;
 				int source_s = text[i] & mask;
 				source_s = source_s >> 21;
 				printf("Add Source s = %d\n", source_s);
@@ -275,11 +276,13 @@ int exec_bytecode(){
 				//Add to registers
 				registers[add_dest] = registers[source_s]+registers[source_t];
 				
+				printf("Destination: %s = source_s %d: + source_t %d: ", register_str[add_dest], registers[source_s], registers[source_t]);
+				
 				}
 			else if	(text[i] >> 26 == 12){
 				printf("ANDI\n");
 				//Source s
-				mask = 0x03e000000;
+				mask = 0x03e00000;
 				int source_s = text[i] & mask;
 				source_s = source_s >> 21;
 				printf("ANDI source s = %d\n", source_s);
@@ -293,19 +296,58 @@ int exec_bytecode(){
 				mask = 0x001f0000;
 				int andi_dest = text[i] & mask;
 				andi_dest = andi_dest >> 16;
-				printf("ANDI destination = %d\n", andi_dest);
+				printf("ANDI destination = %s\n", register_str[andi_dest]);
 				
 				//ANDI to registers
-				registers[andi_dest] = registers[source_s] + registers[imm];
+				registers[andi_dest] = registers[source_s] + imm;
 				
 				}
 			else if ((text[i] >> 26 == 0) && (text[i] << 30) == k << 31){
 				printf("SRL\n");
+				//Source s
+				mask = 0x001f0000;
+				int source_s = text[i] & mask;
+				source_s = source_s >> 16;
+				printf("SRL source s = %d\n", source_s);
 				
+				//Shift amount (shamt)
+				mask = 0x000007c0;
+				int shamt = text[i] & mask;
+				shamt = shamt >> 6;
+				printf("The srl shift amount = %d\n", shamt);
+				
+				//SRL destination
+				mask = 0x0000f800;
+				int srl_dest = text[i] & mask;
+				srl_dest = srl_dest >> 11;
+				printf("SRL destination = %s\n",register_str[srl_dest]);
+				
+				//SRL registers
+				registers[srl_dest] = registers[source_s] >> shamt;
 				
 				}
 			else if ((text[i] >> 26 == 0) && (text[i] << 26 == 0)){
 				printf("SLL\n");
+				//Source s
+				mask = 0x001f0000;
+				int source_s = text[i] & mask;
+				source_s = source_s >> 16;
+				printf("SLL source s = %d\n", source_s);
+				
+				//Shift amount (shamt)
+				mask = 0x000007c0;
+				int shamt = text[i] & mask;
+				shamt = shamt >> 6;
+				printf("SLL shamt = %d\n", shamt);
+				
+				//SLL destination
+				mask = 0x0000f800;
+				int sll_dest = sll_dest & mask;
+				sll_dest = sll_dest >> 11;
+				printf("SLL destination = %s\n", register_str[sll_dest]);
+				
+				//SLL registers
+				registers[sll_dest] = registers[source_s] << shamt;
 				}
 			else if ((text[i] >> 26 == 4)){
 				printf("BEQ\n");
@@ -334,30 +376,13 @@ int exec_bytecode(){
 		printf("\n");
 				
 		
-		printf("This is the contents of text[] in hex \n");
-		for (int i=0;i<sizeof(text);i++){
-			if (text[i] != 0){
-				printf("0x%08x\n", text[i]);
-				}
-			}
-			
-		printf("----------------------");
-		printf("\n");
-		printf("----------------------");
-		printf("\n");
-		printf("----------------------");
-		printf("\n");
-				
+	
 		
 
         //print_registers(); // print out the state of registers at the end of execution
 		print_registers();
 		
-		 printf("This is text[1] %d\n", text[1]);
-		 int new = text[1] >> 1;
-		 printf("Shifted right: %d\n", new);
-		 int change = text[1] - new;
-		 printf("Difference: %d\n", change);
+
 
         printf("... DONE!\n");
         return(0);
