@@ -228,7 +228,7 @@ int exec_bytecode(){
 			if ((text[i] >> 26) == 8 ){
 				printf("ADDI\n");
 				//source s
-				mask = 0x03e00000;
+				mask = 0x03e00000; 
 				int source_s = text[i] & mask;
 				source_s = source_s >> 21;
 				printf("ADDI Source c = %s\n", register_str[source_s]);
@@ -255,7 +255,7 @@ int exec_bytecode(){
 				mask = 0x03e00000;
 				int source_s = text[i] & mask;
 				source_s = source_s >> 21;
-				printf("Add Source s = %d\n", source_s);
+				printf("Add Source s = %s\n", register_str[source_s]);
 				
 				//Source t
 				mask = 0x001f0000;
@@ -298,11 +298,53 @@ int exec_bytecode(){
 				}
 			else if ((text[i] >> 26 == 0) && (text[i] << 30) == k << 31){
 				printf("SRL\n");
+				//Source s
+				mask = 0x001f0000;
+				int source_s = text[i] & mask;
+				source_s = source_s >> 16;
+				printf("SRL source s = %d\n", source_s);
+				
+				//Shift amount (shamt)
+				mask = 0x000007c0;
+				int shamt = text[i] & mask;
+				shamt = shamt >> 6;
+				printf("The srl shift amount = %d\n", shamt);
+				
+				//SRL destination
+				mask = 0x0000f800;
+				int srl_dest = text[i] & mask;
+				srl_dest = srl_dest >> 11;
+				printf("SRL destination = %s\n",register_str[srl_dest]);
+				
+				//SRL registers
+				registers[srl_dest] = registers[source_s] >> shamt;
+				
 				
 				
 				}
 			else if ((text[i] >> 26 == 0) && (text[i] << 26 == 0)){
 				printf("SLL\n");
+				//Source s
+				mask = 0x001f0000;
+				int source_s = text[i] & mask;
+				source_s = source_s >> 16;
+				printf("SLL source s = %d\n", source_s);
+				
+				//Shift amount (shamt)
+				mask = 0x000007c0;
+				int shamt = text[i] & mask;
+				shamt = shamt >> 6;
+				printf("SLL shamt = %d\n", shamt);
+				
+				//SLL destination
+				mask = 0x0000f800;
+				int sll_dest = sll_dest & mask;
+				sll_dest = sll_dest >> 11;
+				printf("SLL destination = %s\n", register_str[sll_dest]);
+				
+				//SLL registers
+				registers[sll_dest] = registers[source_s] << shamt;
+				
 				}
 			else if ((text[i] >> 26 == 4)){
 				printf("BEQ\n");
@@ -360,7 +402,7 @@ int load_program(){
 
        printf("LOADING PROGRAM ...\n");
 
-       f = fopen ("prog1.txt", "r");
+       f = fopen ("prog.txt", "r");
 
        if (f==NULL) {
        		printf("ERROR: program not found\n");
